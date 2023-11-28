@@ -44,29 +44,17 @@ func deleteClient(db *sql.DB, id int64) {
 	// напишите здесь код для удаления записи из таблицы clients по заданному id
 }
 
-func selectClient(db *sql.DB, id int64) {
-	rows, err := db.Query("SELECT id, fio, login, birthday, email FROM clients WHERE id = ?", id)
+func selectClient(db *sql.DB, clientId int64) {
+	var id int64
+	var fio string
+	var login string
+	var birthday string
+	var email string
+
+	err := db.QueryRow("SELECT id, fio, login, birthday, email FROM clients WHERE id = ?", clientId).Scan(&id, &fio, &login, &birthday, &email)
 	if err != nil {
 		panic(err)
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var id int64
-		var fio string
-		var login string
-		var birthday string
-		var email string
-
-		err := rows.Scan(&id, &fio, &login, &birthday, &email)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(id, fio, login, birthday, email)
-	}
-
-	if err := rows.Err(); err != nil {
-		panic(err)
-	}
+	fmt.Println(id, fio, login, birthday, email)
 }
