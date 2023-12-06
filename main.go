@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 
 	_ "modernc.org/sqlite"
@@ -16,6 +15,8 @@ type Client struct {
 	Email    string
 }
 
+// String реализует метод интерфейса fmt.Stringer для Sale, возвращает строковое представление объекта Client.
+// Теперь, если передать объект Client в fmt.Println(), то выведется строка, которую вернёт эта функция.
 func (c Client) String() string {
 	return fmt.Sprintf("ID: %d FIO: %s Login: %s Birthday: %s Email: %s",
 		c.ID, c.FIO, c.Login, c.Birthday, c.Email)
@@ -77,11 +78,7 @@ func main() {
 	// получение клиента по идентификатору и вывод на консоль
 	_, err = selectClient(db, id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			fmt.Printf("Клиент с идентификатором %d не найден", id)
-		} else {
-			fmt.Println(err)
-		}
+		fmt.Println(err)
 		return
 	}
 }
@@ -102,10 +99,10 @@ func deleteClient(db *sql.DB, id int64) error {
 	return nil
 }
 
-func selectClient(db *sql.DB, clientId int64) (Client, error) {
+func selectClient(db *sql.DB, id int64) (Client, error) {
 	client := Client{}
 
-	row := db.QueryRow("SELECT id, fio, login, birthday, email FROM clients WHERE id = ?", clientId)
+	row := db.QueryRow("SELECT id, fio, login, birthday, email FROM clients WHERE id = :id", sql.Named("id", id))
 	err := row.Scan(&client.ID, &client.FIO, &client.Login, &client.Birthday, &client.Email)
 
 	return client, err
