@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -11,10 +10,7 @@ import (
 func TestInsertUpdateDelete(t *testing.T) {
 	// prepare
 	db, err := sql.Open("sqlite", "demo.db")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	require.NoError(t, err)
 	defer db.Close()
 
 	newClient := Client{
